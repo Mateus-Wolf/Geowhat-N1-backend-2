@@ -1,0 +1,89 @@
+Bem-vindo ao Jogo de Adivinhar o País! 🌎
+Esse projeto foi desenvolvido pra disciplina de Back-end II com o prof. Joe Vogel. A ideia é simples: você testa seus conhecimentos de geografia e se diverte com perguntas sobre países, capitais, continentes e moedas.
+
+🎮 Objetivo do Jogo
+
+O objetivo é acumular 5 pontos antes de perder todas as suas 3 vidas. Se conseguir, você vence; se perder todas as vidas… game over! 😅
+
+⚙️ Regras e Mecânicas
+Pontuação e Vidas
+
+Começa com 0 pontos e 3 vidas.
+
+Resposta correta = +1 ponto.
+
+Resposta errada = -1 vida (pontos permanecem).
+
+Condições
+
+Vitória: 5 pontos. 🏆
+
+Derrota: 0 vidas. 💀
+
+Tipos de Perguntas
+
+O servidor sorteia perguntas aleatórias entre algumas categorias:
+
+Adivinhe pela Capital
+
+Pergunta: "A qual país pertence a capital Buenos Aires?"
+
+Adivinhe pelo Continente
+
+Pergunta: "Qual desses países fica na Europa?"
+
+Adivinhe pela Moeda
+
+Pergunta: "A qual país pertence a moeda Iene?"
+
+Perguntas Reversas
+
+Capital Reversa: "Qual é a capital do Brasil?"
+
+Moeda Reversa: "Qual é a moeda oficial do Japão?"
+
+🏗️ Arquitetura da API
+
+A brincadeira rola em dois endpoints principais:
+
+GET /jogo/pergunta
+
+Função: Pega uma pergunta aleatória.
+
+Resposta: JSON com pergunta, opções e a resposta correta (pra validação depois).
+
+POST /jogo/responder
+
+Função: Valida a resposta do jogador.
+
+Body: JSON com a pergunta original e a resposta do jogador.
+
+Resposta: JSON indicando "correto" ou "incorreto".
+
+Dica: Testa no Swagger ou Postman, fica super fácil.
+
+🛠️ Tecnologias Usadas
+
+Back-end: Node.js + Express.js
+
+Requisições HTTP: Axios
+
+APIs de Terceiros
+
+REST Countries API: Dados de países (capital, continente, moeda…)
+
+ExchangeRate-API: Cotação de moedas, enriquecendo o jogo
+
+Documentação e Testes
+
+Swagger: Documentação interativa
+
+Postman: Testes do desenvolvimento
+
+🚀 Escopo Extra (Opcional)
+
+Se der tempo, a ideia é criar um front-end simples em React pra mostrar o jogo de forma interativa.
+
+Objetivo: Demonstração visual e divertida
+
+Prioridade: Secundário — só depois que a API estiver tinindo ✨
