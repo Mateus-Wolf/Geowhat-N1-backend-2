@@ -4,11 +4,17 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const session = require('express-session');
 const paisService = require('./src/services/paisServices');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+app.use(cors({
+    origin: 'http://localhost:3001',
+    credentials: true
+}));
 
 app.use(session({
     secret: 'pode_ser_qualquer_texto_super_secreto_aqui_ninguem_pode_saber',

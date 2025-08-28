@@ -1,0 +1,82 @@
+.container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #282c34;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.placar {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #444;
+}
+
+.pergunta h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.pergunta p {
+    font-style: italic;
+    color: #9a9a9a;
+    margin-bottom: 2rem;
+}
+
+.opcoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 50px;
+}
+
+.botaoOpcao {
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: 2px solid #61dafb;
+    background-color: transparent;
+    color: #61dafb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.botaoOpcao:hover:not(:disabled) {
+    background-color: #61dafb;
+    color: #282c34;
+}
+
+.botaoOpcao:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.feedback {
+    margin-top: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.correto {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+}
+
+.incorreto {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+/* Estilo opcional para os outros botões depois que uma resposta é dada */
+.desabilitado {
+    opacity: 0.6;
+}

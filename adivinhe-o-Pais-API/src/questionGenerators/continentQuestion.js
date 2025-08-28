@@ -1,10 +1,16 @@
 function gerarPerguntaPorContinente(paises, helper) {
     const continentes = ['Africa', 'Americas', 'Asia', 'Europe', 'Oceania'];
-    const continenteSorteado = continentes[Math.floor(Math.random() * continentes.length)];
+    let paisCorreto;
+    let continenteSorteado;
 
-    const paisCorreto = helper.pegarNElementosAleatorios(
-        paises.filter(p => p.continente === continenteSorteado), 1
-    )[0];
+    do {
+        continenteSorteado = continentes[Math.floor(Math.random() * continentes.length)];
+        const paisesDoContinente = paises.filter(p => p.continente === continenteSorteado);
+        
+        if (paisesDoContinente.length > 0) {
+            paisCorreto = helper.pegarNElementosAleatorios(paisesDoContinente, 1)[0];
+        }
+    } while (!paisCorreto);
 
     const paisesErrados = helper.pegarNElementosAleatorios(
         paises.filter(p => p.continente !== continenteSorteado), 3
