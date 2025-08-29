@@ -1,89 +1,96 @@
-Bem-vindo ao Jogo de Adivinhar o País! 🌎
-Esse projeto foi desenvolvido pra disciplina de Back-end II com o prof. Joe Vogel. A ideia é simples: você testa seus conhecimentos de geografia e se diverte com perguntas sobre países, capitais, continentes e moedas.
+# 🎮 Jogo Adivinhe o País
 
-🎮 Objetivo do Jogo
+## 1. Visão Geral do Projeto
+Este documento detalha as regras e a arquitetura do **Jogo Adivinhe o País**, um projeto *full-stack* desenvolvido para a disciplina de **Back-end II**.  
 
-O objetivo é acumular 5 pontos antes de perder todas as suas 3 vidas. Se conseguir, você vence; se perder todas as vidas… game over! 😅
+A aplicação é composta por:  
+- **Back-end**: Webserver (API) em **Node.js/Express**.  
+- **Front-end**: Interface em **React**.  
 
-⚙️ Regras e Mecânicas
-Pontuação e Vidas
+O jogo consome dados de **APIs de terceiros** e traz múltiplas mecânicas, modos de jogo e foco em **polimento visual** e **experiência do usuário**.
 
-Começa com 0 pontos e 3 vidas.
+---
 
-Resposta correta = +1 ponto.
+## 2. Modos de Jogo
 
-Resposta errada = -1 vida (pontos permanecem).
+### 2.1. 🔹 Modo Clássico
+- **Objetivo**: Testar conhecimento de forma estratégica, gerenciando vidas.  
+- **Vidas**: Jogador começa com **3 vidas**. Cada erro consome 1 vida.  
+- **Pontuação**: Cada acerto = **+1 ponto**.  
+- **Vitória**: Atingir **5 pontos**.  
+- **Derrota**: Perder todas as vidas.  
 
-Condições
+### 2.2. ⏱️ Modo Time Attack
+- **Objetivo**: Testar agilidade e conhecimento sob pressão.  
+- **Tempo inicial**: **60 segundos**.  
+- **Bônus por acerto**: **+2 segundos**.  
+- **Penalidade por erro**: **-10 segundos**.  
+- **Fim de jogo**: Tempo chega a zero → pontuação final registrada.  
 
-Vitória: 5 pontos. 🏆
+---
 
-Derrota: 0 vidas. 💀
+## 3. Tipos de Pergunta
+Para manter variedade, o jogo sorteia perguntas entre **5 categorias**:  
 
-Tipos de Perguntas
+- **Por Capital**: Ex.: “A qual país pertence a capital *Varsóvia*?”  
+- **Por Continente**: Ex.: “Qual destes países fica na Ásia?”  
+- **Por Moeda**: Ex.: “A qual país pertence a moeda *Euro*?” *(com cotação em tempo real)*.  
+- **Por Idioma**: Ex.: “Qual destes países tem *Inglês* como idioma oficial?”  
+- **Por Bandeira**: Ex.: “A qual país pertence esta bandeira?” *(imagem exibida)*.  
 
-O servidor sorteia perguntas aleatórias entre algumas categorias:
+---
 
-Adivinhe pela Capital
+## 4. Features da Interface (UI/UX)
+A interface foi construída com foco em **fluidez, polimento e feedback visual imediato**.  
 
-Pergunta: "A qual país pertence a capital Buenos Aires?"
+- 🌗 **Tema Claro/Escuro**: Preferência salva no navegador.  
+- 🎨 **Modais Customizados**: Créditos, configurações e vitória/derrota estilizados com **SweetAlert2**.  
+- 🎬 **Animações Ricas (Framer Motion)**:  
+  - Transições suaves entre menu e jogo.  
+  - Entrada/saída animada para perguntas e opções.  
+  - Efeitos de *pop* e *shake* no placar.  
+  - Animações na barra de tempo e bônus recebido.  
+- ⚡ **Feedback Visual**:  
+  - Botões mudam para **verde (correto)** ou **vermelho (incorreto)**.  
+  - Botões irrelevantes ficam esmaecidos.  
+- 🛠️ **Ícones e Tooltips**: Explicam regras e ações do jogo.  
 
-Adivinhe pelo Continente
+---
 
-Pergunta: "Qual desses países fica na Europa?"
+## 5. Arquitetura da API (Back-end)
+A API é **stateless** e utiliza **express-session** para gerenciar estado do jogo via cookies.  
 
-Adivinhe pela Moeda
+- **GET `/jogo/pergunta`** → Inicia jogo (se necessário) e retorna uma pergunta aleatória (sem resposta).  
+- **POST `/jogo/responder`** → Recebe resposta, valida com a armazenada na sessão, atualiza placar e retorna resultado.  
 
-Pergunta: "A qual país pertence a moeda Iene?"
+---
 
-Perguntas Reversas
+## 6. Tecnologias Utilizadas
 
-Capital Reversa: "Qual é a capital do Brasil?"
+### 🔧 Back-end
+- Node.js  
+- Express.js  
+- express-session  
+- axios  
+- dotenv  
 
-Moeda Reversa: "Qual é a moeda oficial do Japão?"
+### 🎨 Front-end
+- React.js  
+- axios  
+- react-icons  
+- react-tooltip  
+- sweetalert2  
+- canvas-confetti  
+- Framer Motion  
 
-🏗️ Arquitetura da API
+### 🌍 APIs Externas
+- REST Countries  
+- ExchangeRate-API  
 
-A brincadeira rola em dois endpoints principais:
+### 🛠️ Ferramentas
+- Git/GitHub  
+- npm  
+- VS Code  
+- concurrently  
 
-GET /jogo/pergunta
-
-Função: Pega uma pergunta aleatória.
-
-Resposta: JSON com pergunta, opções e a resposta correta (pra validação depois).
-
-POST /jogo/responder
-
-Função: Valida a resposta do jogador.
-
-Body: JSON com a pergunta original e a resposta do jogador.
-
-Resposta: JSON indicando "correto" ou "incorreto".
-
-Dica: Testa no Swagger ou Postman, fica super fácil.
-
-🛠️ Tecnologias Usadas
-
-Back-end: Node.js + Express.js
-
-Requisições HTTP: Axios
-
-APIs de Terceiros
-
-REST Countries API: Dados de países (capital, continente, moeda…)
-
-ExchangeRate-API: Cotação de moedas, enriquecendo o jogo
-
-Documentação e Testes
-
-Swagger: Documentação interativa
-
-Postman: Testes do desenvolvimento
-
-🚀 Escopo Extra (Opcional)
-
-Se der tempo, a ideia é criar um front-end simples em React pra mostrar o jogo de forma interativa.
-
-Objetivo: Demonstração visual e divertida
-
-Prioridade: Secundário — só depois que a API estiver tinindo ✨
+---
