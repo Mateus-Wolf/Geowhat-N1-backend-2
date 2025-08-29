@@ -76,7 +76,28 @@
     color: white !important;
 }
 
-/* Estilo opcional para os outros botões depois que uma resposta é dada */
 .desabilitado {
     opacity: 0.6;
+}
+
+.bandeira {
+    max-width: 150px;
+    height: auto;
+    border: 2px solid #555;
+    border-radius: 8px;
+    margin: 1.5rem auto;
+    background-color: #eee;
+}
+
+.menuButton {
+    margin-top: 2rem;
+    padding: 0.5rem 1rem;
+    background: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.menuButton:hover {
+    background: #777;
 }

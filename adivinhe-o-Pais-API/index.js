@@ -119,8 +119,8 @@ async function iniciarServidor() {
     try {
         await paisService.carregarDadosDosPaises();
         app.listen(PORT, () => {
-            console.log(`O jogo está na porta ${PORT}! 🚀`);
-            console.log(`URL para jogar: http://localhost:${PORT}/api-docs`);
+            console.log(`Jogo rodando na porta ${PORT}! 🚀`);
+            console.log(`URL para jogar pelo Swagger: http://localhost:${PORT}/api-docs`);
         });
     } catch (error) {
         console.error("O servidor não pôde ser iniciado.", error.message);

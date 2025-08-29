@@ -28,11 +28,11 @@ function processarResposta(req, suaResposta, respostaCorreta) {
     // Verifica se o jogo acabou (vitória ou derrota)
     if (req.session.score >= 5) {
         respostaParaUsuario.mensagem = "PARABÉNS, VOCÊ VENCEU O JOGO! 🎉";
-        delete req.session.score; // Reinicia o jogo
+        delete req.session.score;
         delete req.session.vidas;
     } else if (req.session.vidas <= 0) {
         respostaParaUsuario.mensagem = "GAME OVER! 😢 Você perdeu todas as suas vidas.";
-        delete req.session.score; // Reinicia o jogo
+        delete req.session.score;
         delete req.session.vidas;
     }
     
