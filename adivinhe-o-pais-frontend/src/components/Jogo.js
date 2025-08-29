@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import styles from './Jogo.module.css';
 import { useTheme } from '../context/ThemeContext';
+import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
+import TimerBar from './TimeBar';
 
 function Jogo({ modo, voltarAoMenu }) {
     const { theme } = useTheme();
@@ -13,6 +15,12 @@ function Jogo({ modo, voltarAoMenu }) {
     const [carregando, setCarregando] = useState(true);
     const [statusResposta, setStatusResposta] = useState({ selecionada: null, correta: null });
     const [tempo, setTempo] = useState(60);
+
+    const scoreControls = useAnimationControls();
+    const vidasControls = useAnimationControls();
+    const tempoControls = useAnimationControls();
+    const placarAnterior = useRef(placar);
+    const tempoAnterior = useRef(tempo);
 
     const buscarPergunta = useCallback(async () => {
         setCarregando(true);
@@ -30,25 +38,48 @@ function Jogo({ modo, voltarAoMenu }) {
     }, []);
 
     useEffect(() => {
-        // Zera o placar e o tempo ao iniciar um novo modo de jogo
         setPlacar({ score: 0, vidas: 3 });
         setTempo(60);
         buscarPergunta();
     }, [modo, buscarPergunta]);
 
-    // useEffect para controlar o timer do Time Attack
+    useEffect(() => {
+        if (placar.score > placarAnterior.current.score) {
+            scoreControls.start({
+                scale: [1, 1.4, 1],
+                transition: { duration: 0.4, times: [0, 0.2, 1] }
+            });
+        }
+        if (placar.vidas < placarAnterior.current.vidas) {
+            vidasControls.start({
+                x: [0, -5, 5, -5, 0],
+                transition: { duration: 0.4 }
+            });
+        }
+        if (tempo > tempoAnterior.current) {
+            tempoControls.start({
+                scale: [1, 1.4, 1],
+                color: ["#61dafb", "#28a745", "#61dafb"],
+                transition: { duration: 0.8 }
+            });
+        }
+        placarAnterior.current = placar;
+        tempoAnterior.current = tempo;
+    }, [placar, tempo, scoreControls, vidasControls, tempoControls]);
+
     useEffect(() => {
         if (modo === 'timeAttack' && !carregando && tempo > 0 && !statusResposta.selecionada) {
             const timerId = setInterval(() => {
                 setTempo(t => t - 1);
             }, 1000);
-            return () => clearInterval(timerId); // Limpa o timer
+            return () => clearInterval(timerId);
         }
     }, [modo, carregando, tempo, statusResposta.selecionada]);
 
-    // useEffect para verificar se o tempo acabou no Time Attack
     useEffect(() => {
-        if (modo === 'timeAttack' && tempo === 0) {
+        if (modo === 'timeAttack' && tempo <= 0) {
+            if(tempo < 0) setTempo(0); 
+            
             Swal.fire({
                 title: 'Tempo Esgotado!',
                 text: `Sua pontuação final foi: ${placar.score} pontos.`,
@@ -67,8 +98,7 @@ function Jogo({ modo, voltarAoMenu }) {
         setCarregando(true);
         try {
             const response = await axios.post('http://localhost:3000/jogo/responder', 
-                { sua_resposta: respostaDoUsuario },
-                { withCredentials: true }
+                { sua_resposta: respostaDoUsuario }, { withCredentials: true }
             );
 
             const resultado = response.data;
@@ -78,14 +108,16 @@ function Jogo({ modo, voltarAoMenu }) {
             if (resultado.resultado === 'correto') {
                 setFeedback('Certa resposta! ✅');
                 if (modo === 'timeAttack') {
-                    setTempo(t => t + 2); // Adiciona 2 segundos por acerto
-                    setPlacar(p => ({ ...p, score: p.score + 1 })); // Só atualiza os pontos
+                    setTempo(t => t + 2);
+                    setPlacar(p => ({ ...p, score: p.score + 1 }));
                 } else {
                     setPlacar({ score: resultado.score, vidas: resultado.vidas });
                 }
             } else {
                 setFeedback(`Errado! A resposta era ${respostaCorreta}. ❌`);
-                if (modo !== 'timeAttack') {
+                if (modo === 'timeAttack') {
+                    setTempo(t => t - 10);
+                } else {
                     setPlacar({ score: resultado.score, vidas: resultado.vidas });
                 }
             }
@@ -114,15 +146,9 @@ function Jogo({ modo, voltarAoMenu }) {
     };
     
     const getButtonClass = (opcao) => {
-        if (!statusResposta.selecionada) {
-            return styles.botaoOpcao;
-        }
-        if (opcao === statusResposta.correta) {
-            return `${styles.botaoOpcao} ${styles.correto}`;
-        }
-        if (opcao === statusResposta.selecionada) {
-            return `${styles.botaoOpcao} ${styles.incorreto}`;
-        }
+        if (!statusResposta.selecionada) { return styles.botaoOpcao; }
+        if (opcao === statusResposta.correta) { return `${styles.botaoOpcao} ${styles.correto}`; }
+        if (opcao === statusResposta.selecionada) { return `${styles.botaoOpcao} ${styles.incorreto}`; }
         return `${styles.botaoOpcao} ${styles.desabilitado}`;
     };
 
@@ -133,33 +159,71 @@ function Jogo({ modo, voltarAoMenu }) {
         <div className={theme}> 
             <div className={styles.container}>
                 <div className={styles.placar}>
-                    <p><b>Pontos: {placar.score}</b></p>
+                    <motion.p animate={scoreControls}>
+                        <b>Pontos: {placar.score}</b>
+                    </motion.p>
                     {modo === 'classico' ? (
-                        <p><b>Vidas: {placar.vidas} ❤️</b></p>
+                        <motion.p animate={vidasControls}>
+                            <b>Vidas: {placar.vidas} ❤️</b>
+                        </motion.p>
                     ) : (
-                        <p><b>Tempo: {tempo}s ⏳</b></p>
+                        <motion.p animate={tempoControls}>
+                            <b>Tempo: {tempo < 0 ? 0 : tempo}s ⏳</b>
+                        </motion.p>
                     )}
-                </div>
-                <div className={styles.pergunta}>
-                    <h2>{pergunta.pergunta}</h2>
-                    {pergunta.flagUrl && (
-                        <img src={pergunta.flagUrl} alt="Bandeira do país" className={styles.bandeira} />
-                    )}
-                    {pergunta.dica_extra && <p><em>Dica: {pergunta.dica_extra}</em></p>}
                 </div>
                 
-                {feedback && <div className={styles.feedback}>{feedback}</div>}
+                {modo === 'timeAttack' && <TimerBar tempo={tempo} tempoMaximo={60} />}
+                
+                <AnimatePresence mode="wait">
+                    {!carregando && pergunta && (
+                        <motion.div 
+                            key={pergunta.pergunta}
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5 }}
+                            className={styles.pergunta}
+                        >
+                            <h2>{pergunta.pergunta}</h2>
+                            {pergunta.flagUrl && ( <img src={pergunta.flagUrl} alt="Bandeira do país" className={styles.bandeira} /> )}
+                            {pergunta.dica_extra && <p><em>Dica: {pergunta.dica_extra}</em></p>}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                
+                <AnimatePresence>
+                    {feedback && (
+                        <motion.div
+                            key="feedback"
+                            className={styles.feedback}
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.5 }}
+                        >
+                            {feedback}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <div className={styles.opcoes}>
-                    {pergunta.opcoes.map((opcao, index) => (
-                        <button 
+                    {pergunta && pergunta.opcoes.map((opcao, index) => (
+                        <motion.button 
                             key={index}
                             className={getButtonClass(opcao)}
                             onClick={() => handleResposta(opcao)}
                             disabled={carregando || statusResposta.selecionada}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ 
+                                delay: 0.5 + index * 0.1,
+                                duration: 0.3 
+                            }}
                         >
                             {opcao}
-                        </button>
+                        </motion.button>
                     ))}
                 </div>
                 <button onClick={voltarAoMenu} className={styles.menuButton}>Voltar ao Menu</button>
