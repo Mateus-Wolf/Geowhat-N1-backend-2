@@ -3,15 +3,15 @@ const { dicionarioCapitais } = require('../config/capitais');
 const { dicionarioIdiomas } = require('../config/idiomas');
 const gameService = require('./gameService');
 
-// Importamos todos os geradores, MENOS o de continente
 const gerarPerguntaPorCapital = require('../questionGenerators/capitalQuestion');
-// const gerarPerguntaPorContinente = require('../questionGenerators/continentQuestion'); // Desativado
 const gerarPerguntaPorMoeda = require('../questionGenerators/currencyQuestion');
 const gerarPerguntaPorIdioma = require('../questionGenerators/languageQuestion');
 const gerarPerguntaPorBandeira = require('../questionGenerators/flagQuestion');
-const gerarPerguntaPorArea = require('../questionGenerators/areaQuestion');
 const gerarPerguntaPorPopulacao = require('../questionGenerators/populationQuestion');
 const gerarPerguntaPorFronteira = require('../questionGenerators/borderQuestion');
+const gerarPerguntaPorArea = require('../questionGenerators/areaQuestion');
+const gerarPerguntaPorAreaMinima = require('../questionGenerators/areaMinimaQuestion');
+const gerarPerguntaPorPopulacaoMinima = require('../questionGenerators/populationMinimaQuestion');
 
 let todosOsPaises = [];
 
@@ -63,7 +63,7 @@ async function carregarDadosDosPaises() {
                     cca3: pais.cca3
                 };
             })
-            .filter(pais => pais.nome && pais.capital && pais.moeda && pais.idioma && pais.flagUrl && pais.cca3);
+            .filter(pais => pais.nome && pais.capital && pais.moeda && pais.idioma && pais.flagUrl && pais.cca3 && pais.area);
         
         console.log(`${todosOsPaises.length} países válidos carregados.`);
         return true;
@@ -76,21 +76,30 @@ async function carregarDadosDosPaises() {
 async function obterPerguntaAleatoria(req) {
     gameService.iniciarJogo(req);
 
-    const geradores = [
+    let geradoresDisponiveis = [
         gerarPerguntaPorCapital,
         gerarPerguntaPorMoeda,
         gerarPerguntaPorIdioma,
         gerarPerguntaPorBandeira,
-        gerarPerguntaPorArea,
         gerarPerguntaPorPopulacao,
-        gerarPerguntaPorFronteira
+        gerarPerguntaPorFronteira,
+        gerarPerguntaPorArea,
+        gerarPerguntaPorAreaMinima,
+        gerarPerguntaPorPopulacaoMinima
     ];
+
+    const isFromSwagger = req.headers.referer && req.headers.referer.includes('/api-docs');
     
-    const geradorAleatorio = geradores[Math.floor(Math.random() * geradores.length)];
+    if (isFromSwagger) {
+        console.log("[MODO DEV] Requisição do Swagger detectada. Removendo pergunta de bandeira.");
+        geradoresDisponiveis = geradoresDisponiveis.filter(g => g !== gerarPerguntaPorBandeira);
+    }
+    
+    const geradorAleatorio = geradoresDisponiveis[Math.floor(Math.random() * geradoresDisponiveis.length)];
     
     const perguntaCompleta = await geradorAleatorio(todosOsPaises, helpers);
-
-     console.log(`[MODO DEV] Resposta Certa: ${perguntaCompleta.resposta_correta}`);
+    
+    console.log(`[MODO DEV] Resposta Certa: ${perguntaCompleta.resposta_correta}`);
     
     req.session.respostaCorreta = perguntaCompleta.resposta_correta;
     delete perguntaCompleta.resposta_correta;
