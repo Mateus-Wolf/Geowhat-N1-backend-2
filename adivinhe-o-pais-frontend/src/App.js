@@ -5,12 +5,12 @@ import Footer from './components/Footer';
 import { useTheme } from './context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip } from 'react-tooltip';
+import logo from './logo.png';
 
 function App() {
     const { theme } = useTheme();
     const [modoDeJogo, setModoDeJogo] = useState('menu');
 
-    // Configurações da animação de transição de tela
     const pageVariants = {
         initial: { opacity: 0, x: "-100vw" },
         in: { opacity: 1, x: 0 },
@@ -25,7 +25,6 @@ function App() {
 
     return (
         <div className={`App ${theme}`}>
-            {/* AnimatePresence vai cuidar da transição */}
             <AnimatePresence mode="wait">
                 {modoDeJogo === 'menu' ? (
                     <motion.div
@@ -36,38 +35,25 @@ function App() {
                         variants={pageVariants}
                         transition={pageTransition}
                     >
-                        <h1>Questões de Geografia!</h1>
+                        <img src={logo} className="App-logo" alt="logo do jogo" />
+                        <h1>Geowhat?!</h1>
                         <div className="menu-container">
                             <h2>Escolha um modo de jogo</h2>
-
-                            <button 
+                            <button
                                 onClick={() => setModoDeJogo('classico')}
-                                data-tooltip-id="menu-tooltip" 
+                                data-tooltip-id="global-tooltip"
                                 data-tooltip-content="Faça 5 pontos para vencer, mas cuidado, você só tem 3 vidas!"
                             >
                                 Modo Clássico
                             </button>
-
-                            <button 
+                            <button
                                 onClick={() => setModoDeJogo('timeAttack')}
-                                data-tooltip-id="menu-tooltip" 
-                                data-tooltip-content="Faça o máximo de pontos em 60 segundos. Cada acerto te dá +2 segundos de vantagem, porém cada erro te tira 10!"
+                                data-tooltip-id="global-tooltip"
+                                data-tooltip-content="Faça o máximo de pontos em 60 segundos. Cada acerto te dá +2 segundos, mas cada erro tira 10!"
                             >
                                 Time Attack
                             </button>
                         </div>
-
-                        {/* Tooltip compartilhado */}
-                        <Tooltip 
-                            id="menu-tooltip" 
-                            style={{ 
-                                backgroundColor: "#14161aff", 
-                                color: "#76e0fdff",
-                                borderRadius: "8px",
-                                maxWidth: "250px",
-                                textAlign: "center"
-                            }}
-                        />
                     </motion.div>
                 ) : (
                     <motion.div
@@ -78,14 +64,27 @@ function App() {
                         variants={pageVariants}
                         transition={pageTransition}
                     >
-                        <Jogo 
-                            modo={modoDeJogo} 
-                            voltarAoMenu={() => setModoDeJogo('menu')} 
+                        <Jogo
+                            modo={modoDeJogo}
+                            voltarAoMenu={() => setModoDeJogo('menu')}
                         />
                     </motion.div>
                 )}
             </AnimatePresence>
             <Footer />
+
+            {/* O Tooltip "mestre" fica aqui, no final, para gerenciar tudo */}
+            <Tooltip
+                id="global-tooltip"
+                style={{
+                    backgroundColor: "#282c34",
+                    color: "#61dafb",
+                    borderRadius: "8px",
+                    maxWidth: "250px",
+                    textAlign: "center",
+                    zIndex: 9999
+                }}
+            />
         </div>
     );
 }

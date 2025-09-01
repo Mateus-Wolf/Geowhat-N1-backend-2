@@ -85,7 +85,7 @@ body.dark {
   justify-content: center;
   gap: 1rem;              
   padding: 2rem;
-  min-height: 40vh;     
+ 
 }
 
 .menu-container button {
@@ -103,10 +103,212 @@ body.dark {
   text-align: center;
 }
 
-
-
 .menu-container button:hover {
   background-color: #61dafb;
   color: #282c34;
 }
 
+
+/* Base para todos os modais */
+.meu-modal-popup {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+.meu-modal-title {
+    font-weight: bold !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 1px solid;
+}
+.meu-modal-confirm-button {
+    border-radius: 8px !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: bold !important;
+    transition: transform 0.2s ease !important;
+}
+.meu-modal-confirm-button:hover {
+    transform: scale(1.05);
+}
+
+/* Estilos para o TEMA ESCURO */
+body.dark .meu-modal-popup {
+    background: #282c34 !important;
+    color: #ffffff !important;
+    border: 1px solid #61dafb;
+}
+body.dark .meu-modal-title {
+    color: #61dafb !important;
+    border-bottom-color: #444c56;
+}
+body.dark .meu-modal-confirm-button {
+    background-color: #61dafb !important;
+    color: #282c34 !important;
+}
+
+/* Estilos para o TEMA CLARO */
+body.light .meu-modal-popup {
+    background: #ffffff !important;
+    color: #282c34 !important;
+    border: 1px solid #ccc;
+}
+body.light .meu-modal-title {
+    color: #282c34 !important;
+    border-bottom-color: #eee;
+}
+body.light .meu-modal-confirm-button {
+    background-color: #282c34 !important;
+    color: #ffffff !important;
+}
+
+
+.conquistas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding: 0.25rem;
+}
+
+
+/* Estilos para o Modal de Conquistas */
+.theme-buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.theme-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #61dafb; 
+    color: #282c34; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.theme-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para os itens de conquista dentro do modal */
+.conquistas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    max-height: 400px; 
+    overflow-y: auto;
+    padding-right: 10px; 
+}
+
+.conquista-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    background-color: rgba(97, 218, 251, 0.1);
+    cursor: default; 
+    border: 1px solid rgba(97, 218, 251, 0.3);
+    color: #ffffff; 
+}
+
+.conquista-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.conquista-item.desbloqueada {
+    background-color: rgba(40, 167, 69, 0.2); 
+    border-color: rgba(40, 167, 69, 0.5);
+}
+
+.conquista-icon {
+    font-size: 1.8em;
+    margin-right: 15px;
+    width: 30px;
+    text-align: center;
+}
+
+.conquista-text {
+    flex-grow: 1;
+    font-size: 1.1em;
+}
+
+.conquista-text strong {
+    display: block;
+    margin-bottom: 2px;
+}
+
+
+/* Scrollbar customizada para o modal de conquistas */
+.conquistas-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.conquistas-container::-webkit-scrollbar-track {
+    background: #3a3f4c;
+    border-radius: 10px;
+}
+
+.conquistas-container::-webkit-scrollbar-thumb {
+    background: #61dafb; 
+    border-radius: 10px;
+}
+
+.conquistas-container::-webkit-scrollbar-thumb:hover {
+    background: #53c0e6; 
+}
+
+.opcoes-container {
+    display: grid; /* Usa grid para organizar os botões */
+    grid-template-columns: 1fr 1fr; /* Duas colunas de largura igual */
+    gap: 15px; /* Espaçamento entre os botões */
+    max-width: 700px; /* Limita a largura do contêiner para centralizar melhor */
+    margin: 30px auto 0 auto; /* Centraliza o contêiner horizontalmente e dá um espaço acima */
+    padding: 0 15px; /* Adiciona um pequeno padding nas laterais para telas menores */
+}
+
+/* Estilo para os botões de resposta dentro do Jogo */
+.opcoes-container button {
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 2px solid #61dafb; /* Cor da borda padrão */
+    background-color: transparent;
+    color: #61dafb; /* Cor do texto padrão */
+    text-align: center;
+    white-space: nowrap; /* Impede que o texto quebre em várias linhas desnecessariamente */
+    overflow: hidden; /* Garante que o texto não "vaze" */
+    text-overflow: ellipsis; /* Adiciona reticências se o texto for muito longo */
+}
+
+.opcoes-container button:hover {
+    background-color: #61dafb;
+    color: #282c34;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para quando a resposta está correta/incorreta */
+.opcoes-container button.correct {
+    background-color: #28a745 !important; /* Verde para correto */
+    color: #ffffff !important;
+    border-color: #28a745 !important;
+}
+
+.opcoes-container button.incorrect {
+    background-color: #dc3545 !important; /* Vermelho para incorreto */
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+}

@@ -4,23 +4,27 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import styles from './Jogo.module.css';
 import { useTheme } from '../context/ThemeContext';
+import { useAchievements } from '../context/AchievementContext';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import TimerBar from './TimeBar';
+import confetti from 'canvas-confetti';
 
 function Jogo({ modo, voltarAoMenu }) {
     const { theme } = useTheme();
+    const { desbloquearConquista } = useAchievements();
     const [pergunta, setPergunta] = useState(null);
     const [placar, setPlacar] = useState({ score: 0, vidas: 3 });
     const [feedback, setFeedback] = useState('');
     const [carregando, setCarregando] = useState(true);
     const [statusResposta, setStatusResposta] = useState({ selecionada: null, correta: null });
     const [tempo, setTempo] = useState(60);
+    const [acertosSeguidos, setAcertosSeguidos] = useState(0);
 
     const scoreControls = useAnimationControls();
     const vidasControls = useAnimationControls();
     const tempoControls = useAnimationControls();
-    const placarAnterior = useRef(placar);
     const tempoAnterior = useRef(tempo);
+    const placarAnterior = useRef(placar);
 
     const buscarPergunta = useCallback(async () => {
         setCarregando(true);
@@ -40,6 +44,7 @@ function Jogo({ modo, voltarAoMenu }) {
     useEffect(() => {
         setPlacar({ score: 0, vidas: 3 });
         setTempo(60);
+        setAcertosSeguidos(0);
         buscarPergunta();
     }, [modo, buscarPergunta]);
 
@@ -80,17 +85,26 @@ function Jogo({ modo, voltarAoMenu }) {
         if (modo === 'timeAttack' && tempo <= 0) {
             if(tempo < 0) setTempo(0); 
             
+            if (placar.score >= 20) {
+                desbloquearConquista('VELOZ_E_CURIOSO');
+            }
+            
             Swal.fire({
                 title: 'Tempo Esgotado!',
                 text: `Sua pontuação final foi: ${placar.score} pontos.`,
                 icon: 'warning',
                 confirmButtonText: 'Voltar ao Menu',
-                background: '#282c34', color: '#ffffff'
+                customClass: {
+                    popup: 'meu-modal-popup',
+                    title: 'meu-modal-title',
+                    htmlContainer: 'meu-modal-content',
+                    confirmButton: 'meu-modal-confirm-button'
+                }
             }).then(() => {
                 voltarAoMenu();
             });
         }
-    }, [modo, tempo, placar.score, voltarAoMenu]);
+    }, [modo, tempo, placar.score, voltarAoMenu, desbloquearConquista]);
 
     const handleResposta = async (respostaDoUsuario) => {
         if (carregando || statusResposta.selecionada) return;
@@ -107,14 +121,29 @@ function Jogo({ modo, voltarAoMenu }) {
 
             if (resultado.resultado === 'correto') {
                 setFeedback('Certa resposta! ✅');
+                const novosAcertos = acertosSeguidos + 1;
+                setAcertosSeguidos(novosAcertos);
+
+                if (novosAcertos >= 5) {
+                    desbloquearConquista('GENIO_GEOGRAFICO');
+                }
+
                 if (modo === 'timeAttack') {
-                    setTempo(t => t + 2);
-                    setPlacar(p => ({ ...p, score: p.score + 1 }));
+                    const novoTempo = tempo + 2;
+                    setTempo(novoTempo);
+                    const novoPlacar = placar.score + 1;
+                    setPlacar(p => ({ ...p, score: novoPlacar }));
+
+                    if (novoPlacar >= 10 && novoTempo >= 50) {
+                        desbloquearConquista('CONTRA_O_TEMPO');
+                    }
                 } else {
                     setPlacar({ score: resultado.score, vidas: resultado.vidas });
                 }
             } else {
                 setFeedback(`Errado! A resposta era ${respostaCorreta}. ❌`);
+                setAcertosSeguidos(0);
+
                 if (modo === 'timeAttack') {
                     setTempo(t => t - 10);
                 } else {
@@ -123,13 +152,25 @@ function Jogo({ modo, voltarAoMenu }) {
             }
             
             if (modo === 'classico' && resultado.mensagem) {
+                if (resultado.score >= 5) {
+                    desbloquearConquista('VITORIA_CLASSICA');
+                    if (resultado.vidas === 3) {
+                        desbloquearConquista('INTOCAVEL');
+                    }
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                }
                 Swal.fire({
                     title: resultado.mensagem,
                     icon: resultado.score >= 5 ? 'success' : 'error',
                     confirmButtonText: 'Jogar Novamente',
-                    background: '#282c34', color: '#ffffff', confirmButtonColor: '#61dafb'
+                    customClass: {
+                        popup: 'meu-modal-popup',
+                        title: 'meu-modal-title',
+                        confirmButton: 'meu-modal-confirm-button'
+                    }
                 }).then(() => {
                     setPlacar({ score: 0, vidas: 3 }); 
+                    setAcertosSeguidos(0);
                     buscarPergunta();
                 });
             } else {
@@ -163,9 +204,20 @@ function Jogo({ modo, voltarAoMenu }) {
                         <b>Pontos: {placar.score}</b>
                     </motion.p>
                     {modo === 'classico' ? (
-                        <motion.p animate={vidasControls}>
-                            <b>Vidas: {placar.vidas} ❤️</b>
-                        </motion.p>
+                        <motion.div animate={vidasControls} className={styles.vidasContainer}>
+                            <b>Vidas: </b>
+                            <AnimatePresence>
+                                {Array.from({ length: placar.vidas }).map((_, i) => (
+                                    <motion.span
+                                        key={i}
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.5, x: 20 }}
+                                        transition={{ duration: 0.3 }}
+                                    >❤️</motion.span>
+                                ))}
+                            </AnimatePresence>
+                        </motion.div>
                     ) : (
                         <motion.p animate={tempoControls}>
                             <b>Tempo: {tempo < 0 ? 0 : tempo}s ⏳</b>
@@ -207,24 +259,33 @@ function Jogo({ modo, voltarAoMenu }) {
                 </AnimatePresence>
 
                 <div className={styles.opcoes}>
-                    {pergunta && pergunta.opcoes.map((opcao, index) => (
-                        <motion.button 
-                            key={index}
-                            className={getButtonClass(opcao)}
-                            onClick={() => handleResposta(opcao)}
-                            disabled={carregando || statusResposta.selecionada}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            initial={{ opacity: 0, x: -50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ 
-                                delay: 0.5 + index * 0.1,
-                                duration: 0.3 
-                            }}
-                        >
-                            {opcao}
-                        </motion.button>
-                    ))}
+                    {pergunta && pergunta.opcoes.map((opcao, index) => {
+                        const hasAnswered = !!statusResposta.selecionada;
+                        const isCorrect = opcao === statusResposta.correta;
+                        const isSelected = opcao === statusResposta.selecionada;
+
+                        return (
+                            <motion.button 
+                                key={index}
+                                className={getButtonClass(opcao)}
+                                onClick={() => handleResposta(opcao)}
+                                disabled={carregando || hasAnswered}
+                                whileHover={{ scale: hasAnswered ? 1 : 1.05 }}
+                                whileTap={{ scale: hasAnswered ? 1 : 0.95 }}
+                                animate={{
+                                    opacity: hasAnswered && !isCorrect && !isSelected ? 0.5 : 1,
+                                    scale: hasAnswered && !isCorrect && !isSelected ? 0.95 : 1
+                                }}
+                                initial={{ opacity: 0, x: -50 }}
+                                transition={{ 
+                                    delay: 0.5 + index * 0.1,
+                                    duration: 0.3 
+                                }}
+                            >
+                                {opcao}
+                            </motion.button>
+                        )
+                    })}
                 </div>
                 <button onClick={voltarAoMenu} className={styles.menuButton}>Voltar ao Menu</button>
             </div>
