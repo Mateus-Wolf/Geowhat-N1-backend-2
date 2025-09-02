@@ -5,6 +5,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const session = require('express-session');
 const paisService = require('./src/services/paisServices');
 const cors = require('cors');
+const dataLoader = require('./src/services/dataLoader')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -117,7 +118,7 @@ app.post('/jogo/responder', (req, res) => {
 // ---- Inicialização do Servidor ----
 async function iniciarServidor() {
     try {
-        await paisService.carregarDadosDosPaises();
+        await dataLoader.carregarDadosDosPaises()
         app.listen(PORT, () => {
             console.log(`Jogo rodando na porta ${PORT}! 🚀`);
             console.log(`URL para jogar pelo Swagger: http://localhost:${PORT}/api-docs`);
