@@ -1,96 +1,84 @@
-# 🎮 Jogo Adivinhe o País
+# GeoWhat?!
 
-## 1. Visão Geral do Projeto
-Este documento detalha as regras e a arquitetura do **Jogo Adivinhe o País**, um projeto *full-stack* desenvolvido para a disciplina de **Back-end II**.  
-
-A aplicação é composta por:  
-- **Back-end**: Webserver (API) em **Node.js/Express**.  
-- **Front-end**: Interface em **React**.  
-
-O jogo consome dados de **APIs de terceiros** e traz múltiplas mecânicas, modos de jogo e foco em **polimento visual** e **experiência do usuário**.
+O **GeoWhat?!** é um jogo de trivia geográfica full-stack, desenvolvido como projeto para a disciplina de Back-end II. A aplicação combina um back-end robusto e modular em **Node.js/Express.js** com uma interface de usuário (UI) reativa em **React**. O projeto se destaca pela sua ampla variedade de perguntas geradas dinamicamente, múltiplos modos de jogo, e um foco intenso em boas práticas de desenvolvimento e experiência do usuário, incluindo sistema de conquistas e animações ricas.
 
 ---
 
-## 2. Modos de Jogo
+## Modos de Jogo
 
-### 2.1. 🔹 Modo Clássico
-- **Objetivo**: Testar conhecimento de forma estratégica, gerenciando vidas.  
-- **Vidas**: Jogador começa com **3 vidas**. Cada erro consome 1 vida.  
-- **Pontuação**: Cada acerto = **+1 ponto**.  
-- **Vitória**: Atingir **5 pontos**.  
-- **Derrota**: Perder todas as vidas.  
+O jogo foi projetado com alta rejogabilidade, oferecendo dois modos distintos:
 
-### 2.2. ⏱️ Modo Time Attack
-- **Objetivo**: Testar agilidade e conhecimento sob pressão.  
-- **Tempo inicial**: **60 segundos**.  
-- **Bônus por acerto**: **+2 segundos**.  
-- **Penalidade por erro**: **-10 segundos**.  
-- **Fim de jogo**: Tempo chega a zero → pontuação final registrada.  
+### Modo Clássico
+- **Objetivo:** Testar o conhecimento de forma estratégica.  
+- **Vidas:** O jogador começa com 3 vidas e perde uma a cada erro.  
+- **Pontuação:** +1 ponto por acerto.  
+- **Vitória / Derrota:** Vence ao atingir 5 pontos; perde ao zerar as vidas.
 
----
-
-## 3. Tipos de Pergunta
-Para manter variedade, o jogo sorteia perguntas entre **5 categorias**:  
-
-- **Por Capital**: Ex.: “A qual país pertence a capital *Varsóvia*?”  
-- **Por Continente**: Ex.: “Qual destes países fica na Ásia?”  
-- **Por Moeda**: Ex.: “A qual país pertence a moeda *Euro*?” *(com cotação em tempo real)*.  
-- **Por Idioma**: Ex.: “Qual destes países tem *Inglês* como idioma oficial?”  
-- **Por Bandeira**: Ex.: “A qual país pertence esta bandeira?” *(imagem exibida)*.  
+### Modo Time Attack
+- **Objetivo:** Testar agilidade e conhecimento sob pressão.  
+- **Tempo:** O jogador começa com 60 segundos.  
+- **Bônus:** +2 segundos por acerto.  
+- **Penalidade:** -10 segundos por erro.  
+- **Fim de Jogo:** Quando o tempo chega a zero. O objetivo é alcançar a maior pontuação possível.
 
 ---
 
-## 4. Features da Interface (UI/UX)
-A interface foi construída com foco em **fluidez, polimento e feedback visual imediato**.  
+## Tipos de Pergunta
 
-- 🌗 **Tema Claro/Escuro**: Preferência salva no navegador.  
-- 🎨 **Modais Customizados**: Créditos, configurações e vitória/derrota estilizados com **SweetAlert2**.  
-- 🎬 **Animações Ricas (Framer Motion)**:  
-  - Transições suaves entre menu e jogo.  
-  - Entrada/saída animada para perguntas e opções.  
-  - Efeitos de *pop* e *shake* no placar.  
-  - Animações na barra de tempo e bônus recebido.  
-- ⚡ **Feedback Visual**:  
-  - Botões mudam para **verde (correto)** ou **vermelho (incorreto)**.  
-  - Botões irrelevantes ficam esmaecidos.  
-- 🛠️ **Ícones e Tooltips**: Explicam regras e ações do jogo.  
+O back-end utiliza geradores de pergunta modulares, permitindo adicionar facilmente novos tipos de desafio. Atualmente, são 9 categorias:
 
----
-
-## 5. Arquitetura da API (Back-end)
-A API é **stateless** e utiliza **express-session** para gerenciar estado do jogo via cookies.  
-
-- **GET `/jogo/pergunta`** → Inicia jogo (se necessário) e retorna uma pergunta aleatória (sem resposta).  
-- **POST `/jogo/responder`** → Recebe resposta, valida com a armazenada na sessão, atualiza placar e retorna resultado.  
+- **Por Capital:** "A qual país pertence a capital: Roma?"  
+- **Por Bandeira:** "A qual país pertence esta bandeira?" (exibe a imagem da bandeira)  
+- **Por Idioma:** "Qual destes países tem 'Espanhol' como idioma oficial?"  
+- **Por Moeda:** "A qual país pertence a moeda 'Dólar Canadense'?" (com dica da cotação em tempo real)  
+- **Por Fronteira:** "Qual destes países faz fronteira com a Polônia?"  
+- **Maior População:** "Qual destes países possui a maior população?"  
+- **Menor População:** "Qual destes países possui a menor população?"  
+- **Maior Território:** "Qual destes países possui o maior território (área)?"  
+- **Menor Território:** "Qual destes países possui o menor território (área)?"
 
 ---
 
-## 6. Tecnologias Utilizadas
+## Features Principais
 
-### 🔧 Back-end
-- Node.js  
-- Express.js  
-- express-session  
-- axios  
-- dotenv  
+### 1. Lógica de Jogo e Back-end
+- **Gerenciamento de Estado:** API stateless que gerencia placar, vidas e pergunta atual via sessões (express-session).  
+- **Tradução de Dados:** Países, capitais e idiomas traduzidos para português.  
+- **Modo Desenvolvedor:** Loga a resposta correta no console para testes.  
+- **Filtragem Inteligente:** Remove perguntas baseadas em imagem ao detectar requisição da documentação do Swagger.
 
-### 🎨 Front-end
-- React.js  
-- axios  
-- react-icons  
-- react-tooltip  
-- sweetalert2  
-- canvas-confetti  
-- Framer Motion  
+### 2. Interface e Experiência do Usuário (UI/UX)
+- **Tema Claro/Escuro:** Persistência da escolha via localStorage.  
+- **Modais Customizados:** Alertas e pop-ups estilizados com **SweetAlert2**.  
+- **Animações Ricas (Framer Motion):**  
+  - Transições de tela suaves  
+  - Animações de entrada/saída das perguntas  
+  - Efeitos de "pop" e "shake" no placar  
+  - Barra de tempo dinâmica  
+  - Corações animados ao perder vida  
+  - Efeito de confete na vitória (canvas-confetti)  
+- **Tooltips Estilizados:** Dicas nos menus e conquistas (**react-tooltip**)  
+- **Feedback Visual:** Botões de resposta mudam de cor e desabilitam após a jogada
 
-### 🌍 APIs Externas
-- REST Countries  
-- ExchangeRate-API  
-
-### 🛠️ Ferramentas
-- Git/GitHub  
-- npm  
-- VS Code  
-- concurrently  
+### 3. Sistema de Conquistas
+- Monitoramento de progresso do jogador  
+- Conquistas salvas permanentemente no localStorage  
+- Notificação discreta ao desbloquear conquistas
 
 ---
+
+## Arquitetura e Boas Práticas
+
+- **Separação de Responsabilidades:** Back-end e front-end modularizados (serviços, contextos, componentes e geradores).  
+- **Segurança:** Chaves de API gerenciadas via arquivos `.env`.  
+- **Versionamento:** Git com feature branches para novas funcionalidades.  
+- **Facilidade de Teste:** Scripts `.bat` para automatizar instalação e inicialização em Windows.
+
+---
+
+## Tecnologias Utilizadas
+
+- **Back-end:** Node.js, Express.js, express-session, axios, dotenv  
+- **Front-end:** React.js, axios, react-icons, react-tooltip, SweetAlert2, canvas-confetti, Framer Motion  
+- **APIs Externas:** REST Countries, ExchangeRate-API  
+- **Ferramentas:** Git/GitHub, npm, VS Code
