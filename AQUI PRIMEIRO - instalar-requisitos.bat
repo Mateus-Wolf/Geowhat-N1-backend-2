@@ -1,5 +1,5 @@
 @echo off
-REM Define o titulo da janela do console
+REM
 title Instalador de Requisitos - Jogo Adivinhe o Pais
 
 echo ================================================

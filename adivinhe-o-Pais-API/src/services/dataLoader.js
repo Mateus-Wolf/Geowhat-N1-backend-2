@@ -9,6 +9,7 @@ async function carregarDadosDosPaises() {
 
     try {
         console.log("Buscando e processando dados dos países...");
+        // Chamando a API restcountries
         const response = await axios.get('https://restcountries.com/v3.1/all?fields=name,capital,currencies,translations,languages,flags,area,population,borders,cca3');
         
         todosOsPaises = response.data

@@ -1,5 +1,4 @@
 function iniciarJogo(req) {
-    // Inicia um novo jogo na sessão do usuário, se não houver um.
     if (req.session.score === undefined) {
         req.session.score = 0;
         req.session.vidas = 3;

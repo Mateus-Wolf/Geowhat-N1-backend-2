@@ -37,7 +37,7 @@ async function obterPerguntaAleatoria(req) {
     const isFromSwagger = req.headers.referer && req.headers.referer.includes('/api-docs');
     
     if (isFromSwagger) {
-        console.log("[MODO DEV] Requisição do Swagger detectada. Removendo pergunta de bandeira.");
+        console.log("equisição do Swagger detectada. Removendo pergunta de bandeira.");
         geradoresDisponiveis = geradoresDisponiveis.filter(g => g !== gerarPerguntaPorBandeira);
     }
     
@@ -45,7 +45,7 @@ async function obterPerguntaAleatoria(req) {
     
     const perguntaCompleta = await geradorAleatorio(todosOsPaises, helpers);
     
-    console.log(`[MODO DEV] Resposta Certa: ${perguntaCompleta.resposta_correta}`);
+    console.log(`Resposta Certa: ${perguntaCompleta.resposta_correta}`);
     
     req.session.respostaCorreta = perguntaCompleta.resposta_correta;
     delete perguntaCompleta.resposta_correta;

@@ -1,5 +1,4 @@
 async function gerarPerguntaPorMoeda(paises, helpers) {
-    // Pega 4 países aleatórios que tenham um código de moeda
     const opcoesDePaises = helpers.pegarNElementosAleatorios(
         paises.filter(p => p.codigoMoeda), 4
     );
@@ -8,7 +7,6 @@ async function gerarPerguntaPorMoeda(paises, helpers) {
     const moeda = paisCorreto.moeda;
     const opcoes = opcoesDePaises.map(p => p.nome).sort();
     
-    // Função helper que virá do nosso serviço para buscar a cotação
     const cotacao = await helpers.buscarCotacaoMoeda(paisCorreto.codigoMoeda);
     
     let dicaExtra = "Não foi possível obter a cotação desta moeda em tempo real.";
